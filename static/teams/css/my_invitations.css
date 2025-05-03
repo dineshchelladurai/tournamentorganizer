@@ -1,0 +1,100 @@
+.my-invitations-container {
+    max-width: 1200px;
+    margin: 80px auto;
+    padding: 20px;
+}
+
+.page-title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+.invitations-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.invitation-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    border-top: 4px solid #007bff;
+}
+
+.card-header {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.team-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.sport-type {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.label {
+    font-weight: 500;
+    color: #555;
+}
+
+.value {
+    color: #333;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.download-button, .fixture-button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.download-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.download-button:hover {
+    background-color: #0056b3;
+}
+
+.fixture-button {
+    background-color: #28a745;
+    color: white;
+}
+
+.fixture-button:hover {
+    background-color: #218838;
+}

@@ -1,0 +1,389 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Scoring - Cricket Scorecard</title>
+    <link rel="stylesheet" href="{% static 'teams/css/home.css' %}">
+
+    <link rel="stylesheet" href="{% static 'teams/css/scorecard.css' %}">
+    <style>
+        .scoring-container { max-width: 700px; margin: 30px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px #0001; padding: 20px; }
+        .score-display { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        .current-innings { font-size: 1.5em; margin-bottom: 10px; }
+        .batting-info { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .batsmen, .bowler { flex: 1; text-align: center; }
+        .player-name { font-weight: bold; }
+        .player-stats { color: #495057; }
+        .scoring-controls { display: grid; gap: 10px; }
+        .runs-buttons, .extras-buttons { display: flex; gap: 10px; justify-content: center; }
+        .run-btn, .extra-btn, .wicket-btn { padding: 10px 18px; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; }
+        .run-btn { background: #007bff; color: #fff; }
+        .extra-btn { background: #6c757d; color: #fff; }
+        .wicket-btn { background: #dc3545; color: #fff; }
+        .over-balls { margin-top: 10px; }
+        .ball { display: inline-block; width: 24px; height: 24px; border-radius: 50%; background: #f8f9fa; border: 1px solid #dee2e6; text-align: center; line-height: 24px; margin-right: 3px; font-weight: bold; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0008; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: #fff; padding: 30px; border-radius: 8px; min-width: 300px; }
+        .submit-btn { margin-top: 15px; width: 100%; }
+    </style>
+</head>
+<body>
+    {% include 'teams/navbar.html' %}
+
+    <div class="scoring-container">
+        <!-- Scoreboard -->
+        <div class="score-display">
+            <div class="current-innings">
+                <span id="batting-team">{{ batting_team }}</span>
+                <span id="current-score">0/0</span>
+                <span id="current-overs">(0.0/{{ match.overs }})</span>
+            </div>
+            <div>
+                <span>CRR: </span><span id="current-runrate">0.00</span>
+                <span id="target-section" style="display:none;">
+                    | Target: <span id="target-score"></span>
+                    | RRR: <span id="required-rate">0.00</span>
+                    | Need: <span id="runs-needed"></span>
+                    | Balls: <span id="balls-remaining"></span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Batting and Bowling Info -->
+        <div class="batting-info">
+            <div class="batsmen">
+                <div class="striker">
+                    <div class="player-name"><span id="striker-name"></span> *</div>
+                    <div class="player-stats"><span id="striker-runs">0</span> (<span id="striker-balls">0</span>)</div>
+                </div>
+                <div class="non-striker">
+                    <div class="player-name"><span id="non-striker-name"></span></div>
+                    <div class="player-stats"><span id="non-striker-runs">0</span> (<span id="non-striker-balls">0</span>)</div>
+                </div>
+            </div>
+            <div class="bowler">
+                <div class="player-name"><span id="current-bowler-name"></span></div>
+                <div id="over-balls" class="over-balls"></div>
+            </div>
+        </div>
+
+        <!-- Scoring Controls -->
+        <div id="scoring-controls" class="scoring-controls">
+            <div class="runs-buttons">
+                <button onclick="addRuns(0)" class="run-btn">0</button>
+                <button onclick="addRuns(1)" class="run-btn">1</button>
+                <button onclick="addRuns(2)" class="run-btn">2</button>
+                <button onclick="addRuns(3)" class="run-btn">3</button>
+                <button onclick="addRuns(4)" class="run-btn">4</button>
+                <button onclick="addRuns(6)" class="run-btn">6</button>
+            </div>
+            <div class="extras-buttons">
+                <button onclick="addExtra('nb')" class="extra-btn">No Ball</button>
+                <button onclick="addExtra('wd')" class="extra-btn">Wide</button>
+                <button onclick="addExtra('lb')" class="extra-btn">Leg Bye</button>
+                <button onclick="addExtra('b')" class="extra-btn">Bye</button>
+            </div>
+            <button onclick="recordWicket()" class="wicket-btn">Wicket</button>
+        </div>
+    </div>
+
+    <!-- Player Selection Modal -->
+    <div id="playerSelectionModal" class="modal" style="display: flex;">
+        <div class="modal-content">
+            <h2>Select Opening Players</h2>
+            <div>
+                <label>Striker:</label>
+                <select id="initialStriker"></select>
+            </div>
+            <div>
+                <label>Non-Striker:</label>
+                <select id="initialNonStriker"></select>
+            </div>
+            <div>
+                <label>Bowler:</label>
+                <select id="initialBowler"></select>
+            </div>
+            <button onclick="startInnings()" class="submit-btn">Start Innings</button>
+        </div>
+    </div>
+
+    <!-- New Bowler Modal -->
+<div id="newBowlerModal" class="modal">
+    <div class="modal-content">
+        <h2>Select New Bowler</h2>
+        <div>
+            <label>Bowler:</label>
+            <select id="nextBowler">
+                {% for player in bowling_players %}
+                    <option value="{{ player.player_name }}">{{ player.player_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button onclick="setNewBowler()" class="submit-btn">Continue</button>
+    </div>
+</div>
+
+<!-- New Batsman Modal -->
+<div id="newBatsmanModal" class="modal">
+    <div class="modal-content">
+        <h2>Select New Batsman</h2>
+        <div>
+            <label>Batsman:</label>
+            <select id="nextBatsman"></select>
+        </div>
+        <button onclick="setNewBatsman()" class="submit-btn">Continue</button>
+    </div>
+</div>
+
+    
+
+    <script>
+        // At the top, after page load, set these from Django context:
+        let team1 = [{% for p in team1_players %}'{{ p.player_name }}',{% endfor %}];
+        let team2 = [{% for p in team2_players %}'{{ p.player_name }}',{% endfor %}];
+        let team1Name = "{{ match.team1_name }}";
+        let team2Name = "{{ match.team2_name }}";
+
+        // Initial batting/bowling assignment
+        let battingTeam = team1;
+        let bowlingTeam = team2;
+        let battingTeamName = team1Name;
+        let bowlingTeamName = team2Name;
+
+        // --- STATE ---
+        let matchState = {
+            striker: null,
+            nonStriker: null,
+            currentBowler: null,
+            strikerStats: { runs: 0, balls: 0, fours: 0, sixes: 0 },
+            nonStrikerStats: { runs: 0, balls: 0, fours: 0, sixes: 0 },
+            currentOver: [],
+            legalDeliveries: 0,
+            totalRuns: 0,
+            totalWickets: 0,
+            totalBalls: 0,
+            maxOvers: {{ match.overs }},
+            maxBalls: {{ match.overs }} * 6,
+            innings: 1,
+            target: 0,
+            isSecondInnings: false,
+            dismissedPlayers: []
+        };
+
+        // --- INIT ---
+        window.onload = function() {
+            populatePlayerSelectionDropdowns();
+            document.getElementById('playerSelectionModal').style.display = 'flex';
+            document.getElementById('scoring-controls').style.display = 'none';
+        }
+
+        function populatePlayerSelectionDropdowns() {
+            let strikerSelect = document.getElementById('initialStriker');
+            let nonStrikerSelect = document.getElementById('initialNonStriker');
+            let bowlerSelect = document.getElementById('initialBowler');
+            strikerSelect.innerHTML = '';
+            nonStrikerSelect.innerHTML = '';
+            bowlerSelect.innerHTML = '';
+            battingTeam.forEach(function(player) {
+                strikerSelect.innerHTML += `<option value="${player}">${player}</option>`;
+                nonStrikerSelect.innerHTML += `<option value="${player}">${player}</option>`;
+            });
+            bowlingTeam.forEach(function(player) {
+                bowlerSelect.innerHTML += `<option value="${player}">${player}</option>`;
+            });
+        }
+
+        function startInnings() {
+            const striker = document.getElementById('initialStriker').value;
+            const nonStriker = document.getElementById('initialNonStriker').value;
+            const bowler = document.getElementById('initialBowler').value;
+            if (striker === nonStriker) {
+                alert("Please select different players for striker and non-striker!");
+                return;
+            }
+            matchState.striker = striker;
+            matchState.nonStriker = nonStriker;
+            matchState.currentBowler = bowler;
+            matchState.strikerStats = { runs: 0, balls: 0, fours: 0, sixes: 0 };
+            matchState.nonStrikerStats = { runs: 0, balls: 0, fours: 0, sixes: 0 };
+            updatePlayerDisplay();
+            document.getElementById('playerSelectionModal').style.display = 'none';
+            document.getElementById('scoring-controls').style.display = 'grid';
+        }
+
+        function startSecondInnings() {
+            // ... your existing swap code ...
+            document.getElementById('batting-team').textContent = battingTeamName;
+            populatePlayerSelectionDropdowns();
+            document.getElementById('playerSelectionModal').style.display = 'flex';
+            document.getElementById('scoring-controls').style.display = 'none';
+        }
+
+        // --- SCORING ---
+        function addRuns(runs) {
+            if (matchState.legalDeliveries >= 6) {
+                showNewBowlerModal();
+                return;
+            }
+            matchState.strikerStats.balls++;
+            matchState.strikerStats.runs += runs;
+            if (runs === 4) matchState.strikerStats.fours++;
+            if (runs === 6) matchState.strikerStats.sixes++;
+            matchState.legalDeliveries++;
+            matchState.totalBalls++;
+            matchState.currentOver.push(runs.toString());
+            matchState.totalRuns += runs;
+            updatePlayerDisplay();
+            updateOverDisplay();
+            updateMainScoreboard();
+            if (runs % 2 === 1) rotateStrike();
+            if (matchState.legalDeliveries === 6) showNewBowlerModal();
+            checkInningsEnd();
+        }
+
+        function addExtra(type) {
+            if (matchState.legalDeliveries >= 6) {
+                showNewBowlerModal();
+                return;
+            }
+            let runs = (type === 'nb' || type === 'wd') ? 1 : 0;
+            matchState.currentOver.push(type === 'wd' ? 'Wd' : type === 'nb' ? 'N' : type.toUpperCase());
+            matchState.totalRuns += runs;
+            updateOverDisplay();
+            updateMainScoreboard();
+            // Only increment legal deliveries for byes and leg byes
+            if (type !== 'nb' && type !== 'wd') {
+                matchState.legalDeliveries++;
+                matchState.totalBalls++;
+                if (matchState.legalDeliveries === 6) showNewBowlerModal();
+                checkInningsEnd();
+            }
+        }
+
+        function recordWicket() {
+            if (matchState.legalDeliveries >= 6) {
+                showNewBowlerModal();
+                return;
+            }
+            matchState.strikerStats.balls++;
+            matchState.legalDeliveries++;
+            matchState.totalBalls++;
+            matchState.currentOver.push('W');
+            matchState.totalWickets++;
+            matchState.dismissedPlayers.push(matchState.striker);
+            updatePlayerDisplay();
+            updateOverDisplay();
+            updateMainScoreboard();
+            if (matchState.legalDeliveries === 6) showNewBowlerModal();
+            checkInningsEnd();
+            showNewBatsmanModal();
+        }
+
+        // --- DISPLAY ---
+        function updatePlayerDisplay() {
+            document.getElementById('striker-name').textContent = matchState.striker;
+            document.getElementById('striker-runs').textContent = matchState.strikerStats.runs;
+            document.getElementById('striker-balls').textContent = matchState.strikerStats.balls;
+            document.getElementById('non-striker-name').textContent = matchState.nonStriker;
+            document.getElementById('non-striker-runs').textContent = matchState.nonStrikerStats.runs;
+            document.getElementById('non-striker-balls').textContent = matchState.nonStrikerStats.balls;
+            document.getElementById('current-bowler-name').textContent = matchState.currentBowler;
+        }
+
+        function updateOverDisplay() {
+            const overBallsDiv = document.getElementById('over-balls');
+            overBallsDiv.innerHTML = '';
+            matchState.currentOver.forEach(ball => {
+                const ballSpan = document.createElement('span');
+                ballSpan.className = 'ball';
+                ballSpan.textContent = ball;
+                if (ball === '4') ballSpan.style.background = '#28a745';
+                if (ball === '6') ballSpan.style.background = '#007bff';
+                if (ball === 'Wd' || ball === 'N') ballSpan.style.background = '#dc3545';
+                if (ball === 'W') ballSpan.style.background = '#dc3545';
+                overBallsDiv.appendChild(ballSpan);
+            });
+        }
+
+        function updateMainScoreboard() {
+            const overs = Math.floor(matchState.totalBalls / 6) + (matchState.totalBalls % 6) / 10;
+            document.getElementById('current-score').textContent = `${matchState.totalRuns}/${matchState.totalWickets}`;
+            document.getElementById('current-overs').textContent = `(${overs.toFixed(1)}/${matchState.maxOvers})`;
+            const runRate = overs > 0 ? (matchState.totalRuns / overs).toFixed(2) : '0.00';
+            document.getElementById('current-runrate').textContent = runRate;
+            // Target/required run rate for 2nd innings
+            if (matchState.isSecondInnings) {
+                document.getElementById('target-section').style.display = '';
+                const runsNeeded = matchState.target - matchState.totalRuns;
+                const ballsLeft = matchState.maxBalls - matchState.totalBalls;
+                const reqRate = ballsLeft > 0 ? (runsNeeded / (ballsLeft / 6)).toFixed(2) : '0.00';
+                document.getElementById('target-score').textContent = matchState.target;
+                document.getElementById('runs-needed').textContent = Math.max(0, runsNeeded);
+                document.getElementById('balls-remaining').textContent = Math.max(0, ballsLeft);
+                document.getElementById('required-rate').textContent = reqRate;
+            }
+        }
+
+        // --- STRIKE ROTATION ---
+        function rotateStrike() {
+            [matchState.striker, matchState.nonStriker] = [matchState.nonStriker, matchState.striker];
+            [matchState.strikerStats, matchState.nonStrikerStats] = [matchState.nonStrikerStats, matchState.strikerStats];
+            updatePlayerDisplay();
+        }
+
+        // --- NEW BOWLER MODAL ---
+        function showNewBowlerModal() {
+            // Disable last bowler in dropdown
+            const bowlerSelect = document.getElementById('nextBowler');
+            Array.from(bowlerSelect.options).forEach(opt => {
+                opt.disabled = (opt.value === matchState.currentBowler);
+            });
+            document.getElementById('newBowlerModal').style.display = 'flex';
+        }
+
+        function setNewBowler() {
+            const newBowler = document.getElementById('nextBowler').value;
+            if (newBowler === matchState.currentBowler) {
+                alert("Same bowler cannot bowl consecutive overs!");
+                return;
+            }
+            matchState.currentBowler = newBowler;
+            matchState.legalDeliveries = 0;
+            matchState.currentOver = [];
+            rotateStrike();
+            updatePlayerDisplay();
+            updateOverDisplay();
+            document.getElementById('newBowlerModal').style.display = 'none';
+            document.getElementById('scoring-controls').style.display = 'grid';
+        }
+
+        // --- NEW BATSMAN MODAL ---
+        function showNewBatsmanModal() {
+            // Populate batsman dropdown with available players from battingTeam array
+            const batsmanSelect = document.getElementById('nextBatsman');
+            batsmanSelect.innerHTML = '';
+            battingTeam.forEach(function(player) {
+                if (
+                    !matchState.dismissedPlayers.includes(player) &&
+                    player !== matchState.striker &&
+                    player !== matchState.nonStriker
+                ) {
+                    batsmanSelect.innerHTML += `<option value="${player}">${player}</option>`;
+                }
+            });
+            document.getElementById('newBatsmanModal').style.display = 'flex';
+        }
+
+        function setNewBatsman() {
+            const newBatsman = document.getElementById('nextBatsman').value;
+            matchState.striker = newBatsman;
+            matchState.strikerStats = { runs: 0, balls: 0, fours: 0, sixes: 0 };
+            updatePlayerDisplay();
+            document.getElementById('newBatsmanModal').style.display = 'none';
+            document.getElementById('scoring-controls').style.display = 'grid';
+        }
+
+        // --- INNINGS END ---
+        function checkInningsEnd() {

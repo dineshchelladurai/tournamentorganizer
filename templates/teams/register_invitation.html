@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register for Match</title>
+    <link rel="stylesheet" href="{% static 'teams/css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'teams/css/register_invitation.css' %}">
+</head>
+<body>
+    {% include 'teams/navbar.html' %}
+
+    <div class="register-container">
+        <h1 class="register-title">Register for Match</h1>
+
+        <div class="invitation-details">
+            <h2>Match Details</h2>
+            <div class="detail-item">
+                <span class="detail-label">Host Team:</span>
+                <span class="detail-value">{{ invitation.team_name }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Sport:</span>
+                <span class="detail-value">{{ invitation.sport }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Venue:</span>
+                <span class="detail-value">{{ invitation.venue }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Date:</span>
+                <span class="detail-value">{{ invitation.date }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Price:</span>
+                <span class="detail-value">₹{{ invitation.price }}</span>
+            </div>
+        </div>
+
+        <form method="post" class="registration-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Your Team Name</label>
+                <input type="text" value="{{ team_name }}" class="readonly-field" readonly>
+            </div>
+            <div class="form-group">
+                <label for="phone">Contact Number</label>
+                <input type="text" id="phone" name="phone" value="{{ phone }}" required>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="confirm-button">Confirm Registration</button>
+                <a href="{% url 'view_invitations' %}" class="cancel-button">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

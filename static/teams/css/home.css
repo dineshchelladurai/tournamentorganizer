@@ -1,0 +1,290 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+
+*{
+    font-family:sans-serif;
+}
+
+
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+  }
+
+  .slideshow-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    animation: slideshow 15s infinite;
+    z-index: -1;
+  }
+
+  @keyframes slideshow {
+    0%   { background-image: url("{% static 'images/slide1.jpeg' %}"); }
+    33%  { background-image: url("{% static 'images/slide2.jpeg' %}"); }
+    66%  { background-image: url("{% static 'images/slide3.jpeg' %}"); }
+    100% { background-image: url("{% static 'images/slide1.jpeg' %}"); }
+  }
+
+  .content {
+    position: relative;
+    text-align: center;
+    padding-top: 20%;
+    color: white;
+    z-index: 1;
+  }
+  
+/* Navbar Styles */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.nav-brand a {
+    color: #333;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: #333;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+}
+
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px 0;
+    background-color: #333;
+    transition: all 0.3s ease;
+}
+
+.hero-section {
+    text-align: center;
+    padding: 4rem 2rem;
+    background-color: #f1f1f1;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.hero-text {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #666;
+}
+
+.cta-button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.cta-button:hover {
+    background-color: #218838;
+}
+
+.slideshow-container {
+    margin-top: 64px; /* Height of navbar */
+    height: calc(100vh - 64px); /* Full viewport height minus navbar */
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.slide {
+    display: none;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fade {
+    animation-name: fade;
+    animation-duration: 1.5s;
+}
+
+@keyframes fade {
+    from {opacity: .4} 
+    to {opacity: 1}
+}
+
+/* Overlay text on slideshow */
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 2;
+    color: white;
+    width: 90%;
+    max-width: 1200px;
+}
+
+/* Dark overlay for better text visibility */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+/* Mobile Navigation */
+@media screen and (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+
+    .hamburger.active .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .hamburger.active .bar:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #fff;
+        flex-direction: column;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 1rem 0;
+    }
+
+    .nav-links.show {
+        display: flex;
+    }
+
+    .nav-links a {
+        padding: 1rem 2rem;
+        border-bottom: 1px solid #eee;
+        width: 100%;
+    }
+
+    .nav-links a:last-child {
+        border-bottom: none;
+    }
+
+    /* Responsive container adjustments */
+    .community-container,
+    .post-detail-container,
+    .create-post-container,
+    .manage-players-container,
+    .view-invitations-container {
+        margin: 20px auto;
+        padding: 10px;
+    }
+
+    /* Grid adjustments */
+    .invitations-grid,
+    .players-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 10px;
+    }
+
+    /* Form adjustments */
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Card adjustments */
+    .post-card,
+    .invitation-card,
+    .player-card {
+        margin-bottom: 15px;
+    }
+}
+
+/* Additional responsive improvements */
+@media screen and (max-width: 480px) {
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .nav-btn {
+        font-size: 0.9rem;
+    }
+
+    .post-title {
+        font-size: 1.2rem;
+    }
+}
+
+/* Adjust main content to account for fixed navbar */
+body {
+    padding-top: 70px;
+}

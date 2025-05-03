@@ -1,0 +1,158 @@
+.view-invitations-container {
+    max-width: 1200px;
+    margin: 80px auto;
+    padding: 20px;
+}
+
+.page-title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+.invitations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.invitation-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+.invitation-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.team-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.sport-type {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.label {
+    font-weight: 500;
+    color: #555;
+}
+
+.value {
+    color: #333333;
+}
+
+.register-button, 
+.download-button {
+    display: flex;          /* For horizontal alignment of content */
+    justify-content: center;
+    align-items: center;
+    width: 100%;           /* Full width buttons */
+    padding: 12px 20px;    /* Increased padding for better touch targets */
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.download-button i {
+    margin-right: 8px;     /* Space between icon and text */
+}
+
+.register-button {
+    background-color: #28a745;
+    color: white;
+}
+
+.download-button {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.register-button:hover {
+    background-color: #218838;
+}
+
+.download-button:hover {
+    background-color: #138496;
+}
+
+.registered-text {
+    text-align: center;
+    color: #28a745;
+    font-weight: 500;
+    margin-top: 15px;
+}
+
+.invitation-actions {
+    display: flex;
+    flex-direction: column;  /* Stack buttons vertically */
+    gap: 15px;              /* Space between buttons */
+    margin-top: 20px;       /* Space above button group */
+}
+
+.form-group input[type="file"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+}
+
+/* Add responsive breakpoints */
+@media screen and (max-width: 768px) {
+    .invitations-grid {
+        grid-template-columns: 1fr;  /* Single column for mobile */
+    }
+
+    .invitation-card {
+        margin-bottom: 15px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .invitation-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .register-button,
+    .download-button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .card-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

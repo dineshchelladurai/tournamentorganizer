@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Community - TournamentHub</title>
+    <link rel="stylesheet" href="{% static 'teams/css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'teams/css/community.css' %}">
+</head>
+<body>
+    {% include 'teams/navbar.html' %}
+
+    <div class="community-container">
+        <div class="community-header">
+            <h1 class="page-title">Community Discussions</h1>
+            <a href="{% url 'create_post' %}" class="create-post-btn">Create New Post</a>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        {% endif %}
+
+        <div class="posts-container">
+            {% for post in posts %}
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-meta">
+                            <span class="team-name">{{ post.user.team_name }}</span>
+                            <span class="post-date">{{ post.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <span class="sport-tag">{{ post.get_sport_display }}</span>
+                    </div>
+                    
+                    <h2 class="post-title">
+                        <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+                    </h2>
+                    
+                    
+                    <p class="post-preview">{{ post.content|truncatewords:30 }}</p>
+                    
+                    <div class="post-footer">
+                        <div class="post-stats">
+                            <span class="likes-count">
+                                <i class="far fa-heart"></i> {{ post.get_likes_count }}
+                            </span>
+                            <span class="comments-count">
+                                <i class="far fa-comment"></i> {{ post.comments.count }}
+                            </span>
+                        </div>
+                        <a href="{% url 'post_detail' post.id %}" class="read-more">Read More →</a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="no-posts">
+                    <p>No posts yet. Be the first to start a discussion!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

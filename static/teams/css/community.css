@@ -1,0 +1,196 @@
+.community-container {
+    max-width: 1200px;
+    margin: 80px auto;
+    padding: 0 20px;
+}
+
+.community-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-title {
+    font-size: 2rem;
+    color: #333;
+}
+
+.create-post-btn {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.create-post-btn:hover {
+    background-color: #218838;
+}
+
+.posts-container {
+    display: grid;
+    gap: 20px;
+}
+
+.post-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.post-card:hover {
+    transform: translateY(-2px);
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.post-meta {
+    display: flex;
+    gap: 15px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.team-name {
+    font-weight: 500;
+    color: #007bff;
+}
+
+.post-date {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.sport-tag {
+    background: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.post-title {
+    margin: 0 0 10px 0;
+    font-size: 1.5rem;
+}
+
+.post-title a {
+    color: #333;
+    text-decoration: none;
+}
+
+.post-title a:hover {
+    color: #007bff;
+}
+
+.post-preview {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.post-stats {
+    display: flex;
+    gap: 15px;
+}
+
+.likes-count, .comments-count {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.read-more {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.read-more:hover {
+    text-decoration: underline;
+}
+
+.no-posts {
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 8px;
+    color: #666;
+}
+
+.message {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.post-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.like-count, .comment-count {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.like-count i {
+    color: #e74c3c;
+}
+
+.comment-count i {
+    color: #3498db;
+}
+
+/* Add to existing styles */
+@media screen and (max-width: 768px) {
+    .community-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .post-card {
+        margin-bottom: 15px;
+    }
+
+    .post-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .post-footer {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+}

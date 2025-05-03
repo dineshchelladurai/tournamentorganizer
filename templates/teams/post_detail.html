@@ -1,0 +1,105 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ post.title }} - TournamentHub</title>
+    <link rel="stylesheet" href="{% static 'teams/css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'teams/css/post_detail.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    {% include 'teams/navbar.html' %}
+
+    <div class="post-detail-container">
+        <div class="post-content">
+            <div class="post-header">
+                <h1 class="post-title">{{ post.title }}</h1>
+                <div class="post-meta">
+                    <span class="team-name">{{ post.user.team_name }}</span>
+                    <span class="post-date">{{ post.created_at|date:"M d, Y" }}</span>
+                    <span class="sport-tag">{{ post.get_sport_display }}</span>
+                </div>
+            </div>
+
+            <div class="post-body">
+                {{ post.content|linebreaks }}
+            </div>
+
+            <div class="post-actions">
+                <button id="like-btn" class="like-btn {% if user in post.likes.all %}liked{% endif %}" data-post="{{ post.id }}">
+                    <span>
+                        <i class="fa{% if user in post.likes.all %}s{% else %}r{% endif %} fa-heart"></i>
+                        <span id="like-count">{{ post.get_likes_count }}</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <div class="comments-section">
+            <h2>Comments</h2>
+            
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <form method="post" enctype="multipart/form-data" class="comment-form">
+                {% csrf_token %}
+                <textarea name="content" placeholder="Write a comment..." required></textarea>
+                <input type="file" name="file">
+                <button type="submit">Post Comment</button>
+            </form>
+
+            <div class="comments-list">
+                {% for comment in comments %}
+                    <div class="comment">
+                        <div class="comment-header">
+                            <span class="commenter">{{ comment.user.team_name }}</span>
+                            <span class="comment-date">{{ comment.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="comment-content">
+                            {{ comment.content|linebreaks }}
+                            {% if comment.file %}
+                                <div class="comment-file">
+                                    <a href="{{ comment.file.url }}" target="_blank">Download Attachment</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('like-btn').onclick = function(e) {
+        e.preventDefault();
+        const btn = this;
+        const postId = btn.getAttribute('data-post');
+        fetch(`/community/post/${postId}/like/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('like-count').textContent = data.likes;
+            if (data.liked) {
+                btn.classList.add('liked');
+            } else {
+                btn.classList.remove('liked');
+            }
+        });
+    };
+    </script>
+</body>
+</html>

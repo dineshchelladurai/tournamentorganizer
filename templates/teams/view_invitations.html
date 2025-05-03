@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Invitations - TournamentHub</title>
+    <link rel="stylesheet" href="{% static 'teams/css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'teams/css/view_invitations.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    {% include 'teams/navbar.html' %}
+
+    <div class="view-invitations-container">
+        <h1 class="page-title">Available Invitations</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %}">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        {% endif %}
+
+        <div class="invitations-grid">
+            {% for invitation in invitations %}
+                <div class="invitation-card">
+                    <div class="card-header">
+                        <h2 class="team-name">{{ invitation.team_name }}</h2>
+                        <span class="sport-type">{{ invitation.sport }}</span>
+                    </div>
+                    
+                    <div class="card-content">
+                        <div class="info-item">
+                            <span class="label">Venue:</span>
+                            <span class="value">{{ invitation.venue }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Date:</span>
+                            <span class="value">{{ invitation.date }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Price:</span>
+                            <span class="value">₹{{ invitation.price }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Entry_Fee:</span>
+                            <span class="value">₹{{ invitation.entry_fee }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Teams:</span>
+                            <span class="value">
+                                {{ invitation.get_registered_teams_count }}
+                                {% if invitation.team_limit %}
+                                    / {{ invitation.team_limit }}
+                                {% else %}
+                                    (Unlimited)
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        {% if invitation.id in registered_invitations %}
+                            <p class="registered-text">Already Registered</p>
+                            {% if invitation.invitation_file %}
+                                <a href="{{ invitation.invitation_file.url }}" class="download-button" download>
+                                    <i class="fas fa-download"></i> Download Invitation
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <div class="invitation-actions">
+                                <a href="{% url 'register_invitation' invitation.id %}" class="register-button">Register for Match</a>
+                                {% if invitation.invitation_file %}
+                                    <a href="{{ invitation.invitation_file.url }}" class="download-button" download>
+                                        <i class="fas fa-download"></i> Download Invitation
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p>No invitations available at the moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

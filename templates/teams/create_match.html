@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create New Match - Cricket Scorecard</title>
+    <link rel="stylesheet" href="{% static 'teams/css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'teams/css/scorecard.css' %}">
+</head>
+<body>
+    {% include 'teams/navbar.html' %}
+
+    <div class="create-match-container">
+        <h1>Create New Match</h1>
+        
+        <form method="post" class="match-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="team1_name">Team 1 Name:</label>
+                <input type="text" id="team1_name" name="team1_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="team2_name">Team 2 Name:</label>
+                <input type="text" id="team2_name" name="team2_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="venue">Venue:</label>
+                <input type="text" id="venue" name="venue" required>
+            </div>
+
+            <div class="form-group">
+                <label for="overs">Number of Overs:</label>
+                <input type="number" id="overs" name="overs" value="20" min="1" max="50" required>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="submit-btn">Next: Add Players</button>
+                <a href="{% url 'scorecard_list' %}" class="cancel-btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

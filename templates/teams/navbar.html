@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Hub</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'teams/css/home.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="{% url 'home' %}">TournamentHub</a>
+        </div>
+
+        <button class="hamburger" id="hamburger">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="nav-links" id="nav-menu">
+            <a href="{% url 'home' %}">Home</a>
+            {% if is_logged_in %}
+                <a href="{% url 'view_invitations' %}">View Invitations</a>
+                <a href="{% url 'my_invitations' %}">My Invitations</a>
+                <a href="{% url 'manage_players' %}">Manage Players</a>
+                <a href="{% url 'community' %}">Community</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <script>
+        document.getElementById('hamburger').addEventListener('click', function () {
+            document.getElementById('nav-menu').classList.toggle('show');
+            this.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

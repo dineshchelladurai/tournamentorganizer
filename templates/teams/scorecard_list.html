@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cricket Scorecards</title>
+    <link rel="stylesheet" href="{% static 'teams/css/home.css' %}">
+
+    <link rel="stylesheet" href="{% static 'teams/css/scorecard.css' %}">
+</head>
+<body>
+    {% include 'teams/navbar.html' %}
+
+    <div class="scorecard-container">
+        <div class="header-section">
+            <h1>Cricket Scorecards</h1>
+            <a href="{% url 'create_match' %}" class="new-match-btn">Create New Scorecard</a>
+        </div>
+
+        {% if live_matches %}
+        <div class="matches-section">
+            <h2>Live Matches</h2>
+            <div class="matches-grid">
+                {% for match in live_matches %}
+                <div class="match-card live">
+                    <div class="teams">{{ match.team1_name }} vs {{ match.team2_name }}</div>
+                    <div class="venue">{{ match.venue }}</div>
+                    <div class="status">LIVE</div>
+                    <a href="{% url 'scoring' match.id %}" class="view-btn">View Live Score</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if completed_matches %}
+        <div class="matches-section">
+            <h2>Completed Matches</h2>
+            <div class="matches-grid">
+                {% for match in completed_matches %}
+                <div class="match-card completed">
+                    <div class="teams">{{ match.team1_name }} vs {{ match.team2_name }}</div>
+                    <div class="venue">{{ match.venue }}</div>
+                    <div class="result">Winner: {{ match.winner }}</div>
+                    <a href="{% url 'scoring' match.id %}" class="view-btn">View Scorecard</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if not live_matches and not completed_matches %}
+        <div class="no-matches">
+            <p>No matches found. Create a new scorecard to get started!</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

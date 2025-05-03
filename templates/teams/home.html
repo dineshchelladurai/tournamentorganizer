@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tournament Hub</title>
+    <link rel="stylesheet" href="{% static 'teams/css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'teams/css/post_invitation.css' %}">
+
+    
+</head>
+<body>
+
+    {% include 'teams/navbar.html' %}
+
+    <div class="hero-section">
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        {% if is_logged_in %}
+            <h1 class="hero-title">Welcome, {{ user.team_name }}!</h1>
+            <div class="action-buttons">
+                <a href="{% url 'post_invitation' %}" class="cta-button">Post Invitation</a>
+            </div>
+
+        {% else %}
+            <h1 class="hero-title">Welcome to TournamentHub</h1>
+            <p class="hero-text">Find your perfect match, organize tournaments, and join the sports community!</p>
+            <a href="{% url 'signup' %}" class="cta-button">Get Started</a>
+        {% endif %}
+    </div>
+
+  </body>
+</html>

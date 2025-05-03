@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Players - TournamentHub</title>
+    <link rel="stylesheet" href="{% static 'teams/css/scorecard.css' %}">
+</head>
+<body>
+    {% include 'teams/navbar.html' %}
+
+    <div class="add-players-container">
+        <div class="match-info">
+            <h1>Add Players for {{ current_team }}</h1>
+            <div class="match-details">
+                <p><strong>Match:</strong> {{ match.team1_name }} vs {{ match.team2_name }}</p>
+                <p><strong>Venue:</strong> {{ match.venue }}</p>
+                <p><strong>Overs:</strong> {{ match.overs }}</p>
+            </div>
+        </div>
+
+        <form method="post" class="players-form">
+            {% csrf_token %}
+            <input type="hidden" name="team" value="{{ current_team }}">
+
+            <div class="players-grid">
+                {% for i in range %}
+                <div class="form-group">
+                    <label>Player {{ forloop.counter }}</label>
+                    <input type="text" name="player{{ forloop.counter }}" required>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="role-selection">
+                <div class="form-group">
+                    <label>Select Captain</label>
+                    <select name="captain" id="captain" required>
+                        <option value="">Choose captain</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Wicket Keeper</label>
+                    <select name="keeper" id="keeper" required>
+                        <option value="">Choose wicket keeper</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="submit-btn">
+                    {% if current_team == match.team1_name %}
+                        Next: Add {{ match.team2_name }} Players
+                    {% else %}
+                        Next: Proceed to Toss
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Update captain and keeper dropdowns when player names change
+        function updatePlayerSelections() {
+            const captainSelect = document.getElementById('captain');
+            const keeperSelect = document.getElementById('keeper');
+            const players = [];
+
+            // Clear existing options
+            captainSelect.innerHTML = '<option value="">Choose captain</option>';
+            keeperSelect.innerHTML = '<option value="">Choose wicket keeper</option>';
+
+            // Collect all player names
+            for(let i = 1; i <= 11; i++) {
+                const playerInput = document.querySelector(`input[name="player${i}"]`);
+                if(playerInput && playerInput.value.trim()) {
+                    players.push(playerInput.value.trim());
+                }
+            }
+
+            // Add player names to dropdowns
+            players.forEach(player => {
+                captainSelect.add(new Option(player, player));
+                keeperSelect.add(new Option(player, player));
+            });
+        }
+
+        // Add event listeners to all player input fields
+        document.querySelectorAll('input[name^="player"]').forEach(input => {
+            input.addEventListener('input', updatePlayerSelections);
+        });
+    </script>
+</body>
+</html>

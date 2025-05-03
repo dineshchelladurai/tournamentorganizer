@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Post Invitation</title>
+    <link rel="stylesheet" href="{% static 'teams/css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'teams/css/post_invitation.css' %}">
+</head>
+<body>
+    {% include 'teams/navbar.html' %}
+    
+    <div class="post-invitation-container">
+        <h1 class="post-invitation-title">Post New Invitation</h1>
+
+        <form method="post" class="post-invitation-form" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Team Name</label>
+                <input type="text" value="{{ team_name }}" class="readonly-field" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="sport">Sport</label>
+                <select id="sport" name="sport" required>
+                    <option value="cricket">Cricket</option>
+                    <option value="kabaddi">Kabaddi</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="venue">Venue</label>
+                <input type="text" id="venue" name="venue" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" id="price" name="price" value="0" min="0" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="entry_fee">Entry_Fee</label>
+                <input type="number" id="entry_fee" name="entry_fee" value="0" min="0"  required>
+            </div>
+            <div class="form-group">
+                <label for="team_limit">Team Limit (Optional)</label>
+                <input type="number" id="team_limit" name="team_limit" min="2" placeholder="Leave blank for unlimited teams">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Contact Number</label>
+                <input type="text" id="phone" name="phone" value="{{ phone }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="invitation_file">Invitation File (Optional)</label>
+                <input type="file" id="invitation_file" name="invitation_file" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+
+            <button type="submit" class="submit-button">Post Invitation</button>
+        </form>
+
+        <div class="back-button">
+            <a href="{% url 'home' %}">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Invitations</title>
+    <link rel="stylesheet" href="{% static 'teams/css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'teams/css/my_invitations.css' %}">
+</head>
+<body>
+    {% include 'teams/navbar.html' %}
+
+    <div class="my-invitations-container">
+        <h1 class="page-title">My Posted Invitations</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %}">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        {% endif %}
+
+        <div class="invitations-grid">
+            {% for invitation in invitations %}
+                <div class="invitation-card">
+                    <div class="card-header">
+                        <h2 class="team-name">{{ invitation.team_name }}</h2>
+                        <span class="sport-type">{{ invitation.sport }}</span>
+                    </div>
+                    
+                    <div class="card-content">
+                        <div class="info-item">
+                            <span class="label">Venue:</span>
+                            <span class="value">{{ invitation.venue }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Date:</span>
+                            <span class="value">{{ invitation.date }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Price:</span>
+                            <span class="value">₹{{ invitation.price }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Entry Fee:</span>
+                            <span class="value">₹{{ invitation.entry_fee }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Teams:</span>
+                            <span class="value">
+                                {{ invitation.get_registered_teams_count }}
+                                {% if invitation.team_limit %}
+                                    / {{ invitation.team_limit }}
+                                {% else %}
+                                    (Unlimited)
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="card-actions">
+                            <a href="{% url 'download_registrations' invitation.id %}">
+                                <button class="download-button">Download Registrations</button>
+                            </a>
+                            {% if invitation.is_registration_full %}
+                                <a href="{% url 'generate_fixtures' invitation.id %}">
+                                    <button class="fixture-button">Make Fixtures</button>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>You haven't posted any invitations yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
